@@ -8,6 +8,8 @@ def dfs(x, y):
         dfs(x, y-1)
         dfs(x, y+1)
         return True
+    return False
+
 n, m = map(int, input().split())
 
 graph = []
