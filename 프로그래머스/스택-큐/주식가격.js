@@ -1,3 +1,5 @@
+// 몰라서 힌트봤음 다시 한번 접근할 필요가 있는 문제
+
 function solution(prices) {
     let answer = []
     for(let i = 0; i < prices.length; i++) {
@@ -10,5 +12,7 @@ function solution(prices) {
     }
     return answer
 }
+
+// 이거 몰라서 힌트봐
 
 console.log(solution([1,2,3,2,3]))
