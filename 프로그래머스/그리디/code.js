@@ -1,30 +1,22 @@
-function solution(n, lost, reserve) {
-    lost = lost.sort((a, b) => a - b)
-    reserve = reserve.sort((a, b) => a - b)
-    for (let i = 0; i < reserve.length; i++) {
-        for (let j = 0; j < lost.length; j++) {
-            if (reserve[i] === lost[j]) {
-                lost.shift()
-                reserve.shift()
-                i--;
-                j--;
-            }
-            else if (reserve[i] - 1 === lost[j]) {
-                lost.shift()
-                reserve.shift()
-                i--;
-                j--;
-            } else if (reserve[i] + 1 === lost[j]) {
-                lost.shift()
-                reserve.shift()
-                i--;
-                j--;
+function solution(number, k) {
+    list = []
+    for(let i =0; i < number.length; i++) {
+        list.push({num : Number(number[i]), flag : false })
+    }
+    var answer = '';
+    var result = []
+    len = list.length - k
+    for (i = 0; i < len; i++) {
+        max = list[i].num
+        for (j = 0; j <= len+i; j++ ) {
+            if(max < list[j].num) {
+                max = list[j].num
             }
         }
-        console.log(lost,reserve)
+        result.push(max)
     }
-    return n - lost.length
+    console.log(result)
+    return number.length - k
 }
-// [2,3,5,6] [1,2,4,5]
 
-console.log(solution(5, [2, 4], [1, 2, 3, 4, 5])); // 예상 결과: 4
+console.log(solution("1924", 2))
