@@ -1,22 +1,28 @@
-function solution(number, k) {
-    list = []
-    for(let i =0; i < number.length; i++) {
-        list.push({num : Number(number[i]), flag : false })
+function hashStringToInt(s, tableSize) {
+    let hash = 17;
+
+    for (let i = 0; i < s.length; i++) {
+        hash = (13 * hash * s.charCodeAt(i)) % tableSize;
     }
-    var answer = '';
-    var result = []
-    len = list.length - k
-    for (i = 0; i < len; i++) {
-        max = list[i].num
-        for (j = 0; j <= len+i; j++ ) {
-            if(max < list[j].num) {
-                max = list[j].num
-            }
-        }
-        result.push(max)
-    }
-    console.log(result)
-    return number.length - k
+    return hash;
 }
 
-console.log(solution("1924", 2))
+class HashTable {
+    table = new Array(71);
+
+    setItem = (key, value) => {
+        const idx = hashStringToInt(key, this.table.length);
+        this.table[idx] = value;
+    };
+
+    getItem = (key) => {
+        const idx = hashStringToInt(key, this.table.length);
+        return this.table[idx];
+    };
+}
+
+const myTable = new HashTable();
+myTable.setItem('firstName', 'eunjin')
+myTable.setItem('lastName', 'lee')
+
+console.log(myTable.getItem('lastName'));

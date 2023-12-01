@@ -11,4 +11,6 @@ function solution(prices) {
     return answer
 }
 
+// 이거 몰라서 힌트봐
+
 console.log(solution([1,2,3,2,3]))
