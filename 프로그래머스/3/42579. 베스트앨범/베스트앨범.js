@@ -25,16 +25,13 @@ function solution(genres, plays) {
             hash.set(genres[i], arr)
         }
         else {
-            arr = []
             obj = { no: i, count: plays[i] }
-            arr.push(obj)
-            hash.set(genres[i], arr)
+            hash.set(genres[i], [obj])
         }
     }
     for (let i = 0; i < sort_arr.length; i++) {
         hash_data = hash.get(sort_arr[i].key)
         hash_data.sort((a, b) => b.count - a.count)
-        console.log(hash_data)
         if (hash_data.length < 2) { answer.push(hash_data[0].no) }
         else if (hash_data.length >= 2) {
             answer.push(hash_data[0].no)
