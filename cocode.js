@@ -1,48 +1,27 @@
-let fs = require('fs');
-let input = fs.readFileSync('input.txt').toString().split('\n');
+let [N, r, c] = (
+    process.platform === "linux"
+        ? require("fs").readFileSync("/dev/stdin").toString().trim()
+        : `4 7 7`
+)
+    .trim()
+    .split(" ")
+    .map((v) => +v);
 
-const ds = [[-1, 0], [1, 0], [0, 1], [0, -1]];
-const [M, N] = input[0].split(' ').map(Number);
-let queue = [];
-let visit = [...Array(N)].map(e => Array(M).fill(0));
-let count = M * N;
-let answer;
-
-// 초기 상태 세팅
-for (let i = 1; i < input.length; i++) {
-    let box = input[i].split(' ').map(Number);
-
-    box.forEach((tomato, pos) => {
-        if (tomato === 1) {
-            queue.push([i - 1, pos, 0]);
-            visit[i - 1][pos] = 1;
-            count--;
-        } else if (tomato === -1) {
-            visit[i - 1][pos] = 1;
-            count--;
-        }
-    });
-}
-
-let idx = 0;
-while (queue.length != idx) {
-    const [x, y, pos] = queue[idx];
-    for (let i = 0; i < 4; i++) {
-        const xPos = x + ds[i][0];
-        const yPos = y + ds[i][1];
-
-        if (xPos < 0 || yPos < 0 || xPos >= N || yPos >= M) continue;
-        if (!visit[xPos][yPos]) {
-            visit[xPos][yPos] = 1;
-            queue.push([xPos, yPos, pos + 1]);
-            count--;
-        }
+let res = 0;
+const divide = (row, col, size) => {
+    if (row === r && col === c) {
+        // 좌표 찾음
+        console.log(res);
+        return;
     }
+    if (r >= row && r < row + size && c >= col && c < col + size) {
+        // 영역 내에 있음
+        size = parseInt(size / 2);
+        divide(row, col, size);
+        divide(row, col + size, size);
+        divide(row + size, col, size);
+        divide(row + size, col + size, size);
+    } else res += size * size; // 좌표 못 찾음!
+};
 
-    idx++
-    answer = pos;
-}
-
-console.log(box)
-
-console.log(count ? -1 : answer);
+divide(0, 0, Math.pow(2, N));

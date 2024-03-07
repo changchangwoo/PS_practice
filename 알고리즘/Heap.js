@@ -1,14 +1,6 @@
 class MinHeap {
     constructor() {
-        this.heap = [];
-    }
-    
-    size() {
-        return this.heap.length - 1;
-    }
-    
-    getMin() {
-        return this.heap[1] ? this.heap[1] : null;
+        this.heap = [ null ];
     }
     
     swap(a, b) {
@@ -29,7 +21,7 @@ class MinHeap {
     
     heappop() {
         const min = this.heap[1];	
-        if(this.heap.length === 0) return 0
+        if(this.heap.length <= 2) this.heap = [ null ];
         else this.heap[1] = this.heap.pop();   
         
         let curIdx = 1;
@@ -54,13 +46,4 @@ class MinHeap {
 
         return min;
     }
-}
-
-const input = require('fs').readFileSync("input.txt").toString().trim().split('\n')
-const N = Number(input.shift())
-const heap = new MinHeap()
-for(let i = 0; i < N; i++) {
-    console.log(heap.heap)
-    if(+input[i] === 0) console.log(heap.heappop())
-    else heap.heappush(+input[i])
 }
