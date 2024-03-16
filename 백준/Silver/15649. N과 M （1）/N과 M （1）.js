@@ -1,21 +1,26 @@
-let fs = require("fs")
-let input = fs.readFileSync("/dev/stdin").toString().trim().split(' ')
-let N = +input[0]
-let M = +input[1]
-let result = []
+let [N, M] = require('fs').readFileSync("/dev/stdin").toString().trim().split(' ').map(Number);
+let result = [];
+let answer = [];
+let visited = Array(N + 1).fill(false);
 
-function dfs() {
-    if(result.length === M) {
-        console.log(result.join(' '))
-        return false
+function recursion(num) {
+    if (result.length === M) {
+        answer.push([...result]);
+        return;
     }
-    for(let i = 1; i <= N; i++) {
-        if(!result.includes(i)) {
-            result.push(i)
-            dfs()
-            result.pop()
-        } 
+    for (let i = 1; i <= N; i++) {
+        if (visited[i] === false) {
+            visited[i] = true;
+            result.push(i);
+            recursion(num + 1);
+            visited[i] = false;
+            result.pop();
+        }
     }
 }
 
-dfs()
+recursion(1);
+
+answer.forEach(permutation => {
+    console.log(permutation.join(' '));
+});
