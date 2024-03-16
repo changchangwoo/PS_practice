@@ -1,53 +1,70 @@
-const N = 5
+const fs = require('fs');
+let input = fs.readFileSync('../tc.txt').toString().trim().split('\n');
 
-const graph = [
-    [Infinity, 1, Infinity, 2, Infinity],
-    [1, Infinity, 3, Infinity, 2],
-    [Infinity, 3, Infinity, Infinity, 1],
-    [2, Infinity, Infinity, Infinity, 2],
-    [Infinity, 2, 1, 2, Infinity],
-];
+let [nm, s, ...rest] = input;
+const [n, m] = nm.split(' ').map((v) => +v);
+const start = +s;
+const arr = rest.map((str) => str.split(' ').map((v) => +v));
 
-const visited = Array(N).fill(false)
-const dist = visited.map((_, i) => graph[0][i])
+let visited = [...Array(n + 1).fill(false)];
+let d = [...Array(n + 1).fill(Infinity)];
 
-console.log(dist)
+function solution(n, m, start, arr) {
+    //초기화
+    const graph = Array.from(Array(n + 1), () => []);
+    for (const v of arr) {
+        const [a, b, c] = v;
+        graph[a].push([b, c]);
+    }
 
-const findSmallestNode = (visited, distance) => {
-    let minDist = Infinity;
-    let minIdx = 0;
-    for (let i = 0; i < distance.length; i++) {
-        if (visited[i]) continue;
-        if (distance < minDist) {
-            minDist = distance[i];
-            minIdx = i;
+    //방문하지 않은 노드에서 최단 거리가 가장 짧은 노드의 인덱스 반환
+    const getSmallestNode = () => {
+        let min = Infinity;
+        let index = 0;
+        for (const i in d) {
+            if (!visited[i] && min > d[i]) {
+                min = d[i];
+                index = i;
+            }
+        }
+        return index;
+    };
+
+    const dijkstra = (start) => {
+        //시작 노드 초기화
+        d[start] = 0;
+        visited[start] = true;
+        for (const i of graph[start]) {
+            const [node, cost] = i;
+            d[node] = cost;
+        }
+
+        //시작 노드를 제외한 전체 노드에 대해 반복
+        for (let i = 0; i < n; i++) {
+            const cur = +getSmallestNode();
+            visited[cur] = true;
+
+            for (const j of graph[cur]) {
+                const node = j[0];
+                const cost = d[cur] + j[1];
+                if (cost < d[node]) {
+                    d[node] = cost;
+                }
+            }
+        }
+    };
+
+    dijkstra(start);
+
+    for (let i = 1; i <= n; i++) {
+        if (d[i] === Infinity) {
+            console.log('INFINITY');
+        } else {
+            console.log(d[i]);
         }
     }
-    return minIdx;
+
+    return d;
 }
 
-const dijkstra = (graph, visited, distance) => {
-    distance[0] = 0;
-    visited[0] = true
-
-    for(let i = 0; i < distance.length; i++) {
-        const nodeIdx = findSmallestNode(visited, distance);
-        console.log(nodeIdx)
-        visited[nodeIdx] = true
-        for(let j = 0; j < distance.lnegth; j++) {
-            if(visited[j]) continue
-            if(distance[j] > distance[nodeIdx] + graph[nodeIdx][j])
-            distance[j] = distance[nodeIdx] + graph[nodeIdx][j]
-        }
-    }
-}
-
-dijkstra(graph, visited, dist)
-console.log(graph)
-
-/*
-        현재 방문한 노드는 거리 테이블 상에서 가장 거리가 짧은 값을 가진 노드. 
-        다음에 방문할 노드에 저장된 값이
-        "현재 방문한 노드까지 누적 이동 거리 + 다음 노드까지 거리"보다 크다면
-        "현재 방문한 노드까지 누적 이동 거리 + 다음 노드까지 거리"를 거리 테이블의 다음 방문할 노드에 저장
-*/
+console.log(solution(n, m, start, arr));
