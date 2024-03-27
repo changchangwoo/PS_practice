@@ -1,14 +1,19 @@
-function solution(s) {
-    let count = 0
-    for (let i = 0 ; i<s.length; i++) {
-        if(s[i] === "(") {
-            count +=1
+function solution(s){
+    const arr = []
+    for(let item of s) {
+        if(item === "(")
+        {
+            arr.push(0)
         }
-        else if (s[i] === ")") {
-            if(count ===0) return false
-            count -=1
-        }
+        else if(item === ")")
+    {
+    if(arr.length > 0) {
+    arr.pop()
+    } else {
+        return false
     }
-    if(count ===0) return true
+    }
+    }
+    if(arr.length === 0) return true
     else return false
 }
