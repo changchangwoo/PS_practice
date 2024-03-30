@@ -1,24 +1,21 @@
+/*
+귤을 고를 때 서로 다른 종류가 최소가 되려면
+1. 가장 많은 수의 귤은 반드시 포함되어야한다
+*/
 function solution(k, tangerine) {
-    var answer = 0;
-    var hash = new Map()
-    tangerine.forEach(element => {
-        if (!hash.has(element)) {
-            hash.set(element, 1)
-        } else {
-            hash.set(element, hash.get(element) + 1)
-        }
-    });
-    var arr = Array.from(hash, ([key, value]) => ({ no: key, count: value }));
-    arr = arr.sort((a, b) => a.count - b.count)
-    var sort_tangerin = []
-    arr.forEach(element => {
-        for (let i = 0; i < element.count; i++) {
-            sort_tangerin.push(element.no)
-        }
-    });
-    for(let i = 0; i < tangerine.length -k; i++) {
-        sort_tangerin.shift()
+    const hash = new Map()
+    for(let tan of tangerine) {
+        if(!hash.get(tan))
+        {hash.set(tan, 1)}
+        else hash.set(tan, hash.get(tan)+1)
     }
-    sort_tangerin = new Set(sort_tangerin)
-    return sort_tangerin.size
+    let arr = [...hash.values()]
+    arr = arr.sort(((a, b) => b-a))
+    let sum = 0
+    let count = 0
+    while(sum < k) {
+        sum += arr.shift()
+        count++;
+    }
+    return count    
 }
