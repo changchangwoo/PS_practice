@@ -1,13 +1,15 @@
 function solution(s) {
-    var answer = '';
-    s = s.split(' ')
-    s.forEach(element => {
-        var str = ''
-        for (let i = 0; i < element.length; i++) {
-            if (i === 0) str += element[i].toUpperCase()
-            else str += element[i].toLowerCase()
+    const result = []
+    const strs = s.split(' ')
+    for (let str of strs) {
+        if(str === '') {
+            result.push('')
+            continue
         }
-        answer += str + ' '
-    });
-    return answer.slice(0, -1)
+        str = str.split('').map(val => val.toLowerCase())
+        str[0] = str[0].toUpperCase()
+        str = str.join('')
+        result.push(str)
+    }
+    return result.join(' ')
 }
