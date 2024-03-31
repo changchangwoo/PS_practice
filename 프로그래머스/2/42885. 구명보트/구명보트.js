@@ -1,16 +1,20 @@
+/*
+최대 2명씩
+가장 작은 사람은 가장 큰 사람이랑 타야한다
+*/
+
 function solution(people, limit) {
-    let count = 0;
-    people = people.sort((a,b)=>a-b)
-    while(true) {
-        if(people[0] + people[people.length-1] <= limit){
-            people.shift()
+    people = people.sort((a,b) => a-b)
+    let count = 0
+    while(people.length > 0) {
+        if(people[0] + people[people.length-1] > limit) {
             people.pop()
             count++;
         } else {
+            people.shift()
             people.pop()
             count++;
         }
-        if(people.length === 0)break
     }
     return count
 }
