@@ -1,18 +1,17 @@
 function solution(k, dungeons) {
-    let answer = 0
-    const visited = new Array(dungeons.length).fill(false)
-
-    function dfs(k, count) {
-        for(let i =0; i < dungeons.length; i++) {
-            if(visited[i] == false && k >= dungeons[i][0]) {
+    let visited = new Array(dungeons.length).fill(false)
+    let result = []
+    function backtracking(staminar, count) {
+        for (let i = 0; i < dungeons.length; i++) {
+            if (!visited[i] && staminar >= dungeons[i][0]) {
                 visited[i] = true
-                dfs(k - dungeons[i][1], count+1);
-                visited[i] = false;
+                backtracking(staminar-dungeons[i][1], count + 1)
+                visited[i] = false
             }
         }
-        answer = Math.max(answer,count)
+        result.push(count)
     }
-
-    dfs(k, 0)
-    return answer
+    backtracking(k, 0)
+    console.log(result)
+    return Math.max(...result)
 }
