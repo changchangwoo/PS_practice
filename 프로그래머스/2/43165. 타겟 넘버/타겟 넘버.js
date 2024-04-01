@@ -1,16 +1,15 @@
 function solution(numbers, target) {
-    var answer = 0
-    function dfs(count, sum) {
-        if(count === numbers.length) {
-            if(target === sum) {
-                answer++
-            }
+    const answer = []
+    let result = 0
+    const visited = Array(numbers.length).fill(false)
+    function dfs(sum, count) {
+        if (count === numbers.length) {
+            if (target === sum) result++;
             return
         }
-        dfs(count +1, sum + numbers[count])
-        dfs(count +1, sum - numbers[count])
+        dfs(sum + numbers[count], count + 1)
+        dfs(sum - numbers[count], count + 1)
     }
     dfs(0, 0)
-
-    return answer
+    return result
 }
