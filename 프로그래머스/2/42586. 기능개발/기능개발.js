@@ -1,22 +1,28 @@
+/*
+100 - 95
+5 * 1
+
+*/
 function solution(progresses, speeds) {
-    let work = []
     var answer = [];
+    let arr = []
     for(let i = 0; i < progresses.length; i++) {
-        let count = 1
-        while(true) {
-            if(progresses[i] + count * speeds[i] >= 100) {break;}
-            else {count += 1}
+        let sum = 0;
+        let count = 0;
+        while(100-progresses[i] > sum) {
+            sum += speeds[i]
+            count++;
         }
-        work.push(count)
+        arr.push(count)
     }
-    let top = work[0]
+    let start = arr.shift()
     let count = 1
-    for(let i = 1 ; i < work.length; i++) {
-        console.log(work[i])
-        if(work[i] <= top) { count += 1}
-        else { 
+    for(let i = 0; i < arr.length; i++) {
+        if(start >= arr[i]) {
+            count++;
+        } else {
+            start = arr[i]
             answer.push(count)
-            top = work[i]
             count = 1
         }
     }
