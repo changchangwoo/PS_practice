@@ -1,19 +1,17 @@
-function solution(s){
-    const arr = []
-    for(let item of s) {
-        if(item === "(")
-        {
-            arr.push(0)
+function solution(s) {
+    let answer = true
+    let stack = [];
+    for (let i = 0; i < s.length; i++) {
+        if (s[i] === "(") stack.push(0)
+        else if (s[i] === ")") {
+            if (stack.length === 0) {
+                answer = false
+                return answer
+            }
+            stack.pop()
         }
-        else if(item === ")")
-    {
-    if(arr.length > 0) {
-    arr.pop()
-    } else {
-        return false
     }
-    }
-    }
-    if(arr.length === 0) return true
-    else return false
+    if(stack.length !== 0) answer = false
+    return answer
+
 }
