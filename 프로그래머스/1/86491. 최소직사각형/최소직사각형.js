@@ -1,8 +1,26 @@
 function solution(sizes) {
+
+    let answer;
+    let width = [];
+    let height = [];
     for(let i = 0; i < sizes.length; i++) {
-        sizes[i].sort((a,b)=>a-b)
+        let [size_width, size_height] = sizes[i]
+        width.push(size_width)
+        height.push(size_width < size_height ? size_width : size_height)
     }
-    let long_arr = sizes.map(value => value[1]).sort((a,b)=>b-a)
-    let short_arr = sizes.map(value => value[0]).sort((a,b)=>b-a)
-    return long_arr[0] * short_arr[0]
+
+    widthFirst = Math.max(...width) * Math.max(...height)
+
+    width = [];
+    height = [];
+    for(let i = 0; i < sizes.length; i++) {
+        let [size_width, size_height] = sizes[i]
+        width.push(size_width < size_height ? size_width : size_height)
+        height.push(size_height)
+    }
+
+    heightFirst = Math.max(...width) * Math.max(...height)
+
+
+    return widthFirst > heightFirst ? widthFirst : heightFirst
 }
