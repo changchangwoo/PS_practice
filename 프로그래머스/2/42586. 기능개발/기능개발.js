@@ -1,31 +1,17 @@
-/*
-100 - 95
-5 * 1
-
-*/
 function solution(progresses, speeds) {
-    var answer = [];
-    let arr = []
-    for(let i = 0; i < progresses.length; i++) {
-        let sum = 0;
-        let count = 0;
-        while(100-progresses[i] > sum) {
-            sum += speeds[i]
-            count++;
+    let answer = []
+    let time = Math.ceil((100 - progresses[0])/speeds[0]) 
+    let stack = [0]
+    
+    for(let i = 1; i <= progresses.length; i++) {
+        if(progresses[i] + (speeds[i] * time) >= 100) {
+            stack.push(0)
         }
-        arr.push(count)
+        else {
+            answer.push(stack.length)
+            stack = [0]
+            time = Math.ceil((100 - progresses[i])/speeds[i])
+        } 
     }
-    let start = arr.shift()
-    let count = 1
-    for(let i = 0; i < arr.length; i++) {
-        if(start >= arr[i]) {
-            count++;
-        } else {
-            start = arr[i]
-            answer.push(count)
-            count = 1
-        }
-    }
-    answer.push(count)
-    return answer;
+    return answer
 }
