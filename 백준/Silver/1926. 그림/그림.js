@@ -1,42 +1,50 @@
-const input = require('fs').readFileSync("/dev/stdin").toString().trim().split('\n')
-const [N, M] = input.shift().split(' ').map(Number)
-const visited = Array.from({ length: N }, () => Array(M).fill(false))
-const graph = input.map(l => l.split(' ').map(Number))
+let fs = require('fs');
+let input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
+
+const [N, M] = input[0].split(' ').map(Number)
+const graph = []
+for(let i = 1; i <= N; i++) {
+    graph.push(input[i].split(' ').map(Number))
+}
+
+const arr = []
+const visited = Array.from({length : N}, () => new Array(M).fill(false))
 const dx = [0, 0, -1, 1]
 const dy = [-1, 1, 0, 0]
-const queue = []
-const result = []
 
-for (let i = 0; i < N; i++) {
-    for (let j = 0; j < M; j++) {
-        if (graph[i][j] === 1 && !visited[i][j]) {
-            visited[i][j] = true
-            queue.push([j, i])
-            let count = bfs()
-            result.push(count)
+const bfs = (px, py, psize) => {
+    const queue = []
+    let size = psize
+    queue.push([px, py])
+    visited[px][py] = true
+    while(queue.length > 0) {
+        let [x, y] = queue.shift()
+        for(let i = 0; i < 4; i++) {
+            let nx = x + dx[i]
+            let ny = y + dy[i]
+
+            if(nx < 0 || nx >= N || ny < 0 || ny >= M) continue
+            if(visited[nx][ny] === true || graph[nx][ny] === 0) continue
+
+            visited[nx][ny] = true
+            size++;
+            graph[nx][ny] = size
+            queue.push([nx, ny])
+        }
+    }
+
+    return size
+}
+
+let answer = 0
+let sizeArr = []
+for(let i = 0; i < N; i++) {
+    for(let j = 0; j < M; j++) {
+        if(visited[i][j] === false && graph[i][j] !== 0) {
+            sizeArr.push(bfs(i, j, 1))
+            answer++;
         }
     }
 }
-
-function bfs() {
-    let count = 0
-    while (queue.length > 0) {
-        let [curX, curY] = queue.shift()
-        count++
-        for (let i = 0; i < 4; i++) {
-            let nX = curX + dx[i]
-            let nY = curY + dy[i]
-            if (nX >= 0 && nX < M && nY >= 0 && nY < N && graph[nY][nX] === 1 && !visited[nY][nX]) {
-                queue.push([nX, nY])
-                visited[nY][nX] = true
-            }
-        }
-    }
-    return count
-}
-
-if (result.length > 0) {
-    console.log([result.length, Math.max(...result)].join('\n'))
-} else {
-    console.log([0, 0].join('\n'))
-}
+console.log(answer)
+console.log(sizeArr.length === 0 ? 0 :Math.max(...sizeArr))
