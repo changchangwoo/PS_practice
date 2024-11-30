@@ -1,64 +1,76 @@
-class MinHeap {
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split('\n').map(Number);
+
+class Heap {
     constructor() {
-        this.heap = [ null ];
+        this.values = []
     }
-    
-    swap(a, b) {
-        [ this.heap[a], this.heap[b] ] = [ this.heap[b], this.heap[a] ];
+    insert(element) {
+        this.values.push(element)
+        this.bubbleUp();
     }
-    
-    heappush(value) {
-        this.heap.push(value);
-        let curIdx = this.heap.length - 1;
-        let parIdx = (curIdx / 2) >> 0;
-        
-        while(curIdx > 1 && this.heap[parIdx] > this.heap[curIdx]) {
-            this.swap(parIdx, curIdx)
-            curIdx = parIdx;
-            parIdx = (curIdx / 2) >> 0;
+    bubbleUp() {
+        let idx = this.values.length - 1;
+        while (idx > 0) {
+            let parentIdx = Math.floor((idx - 1) / 2);
+            let parent = this.values[parentIdx]
+            if (parent <= this.values[idx]) break;
+
+            this.values[parentIdx] = this.values[idx]
+            this.values[idx] = parent
+            idx = parentIdx;
         }
     }
-    
-    heappop() {
-        const min = this.heap[1];	
-        if(this.heap.length <= 2) this.heap = [ null ];
-        else this.heap[1] = this.heap.pop();   
-        
-        let curIdx = 1;
-        let leftIdx = curIdx * 2;
-        let rightIdx = curIdx * 2 + 1; 
-        
-        if(!this.heap[leftIdx]) return min;
-        if(!this.heap[rightIdx]) {
-            if(this.heap[leftIdx] < this.heap[curIdx]) {
-                this.swap(leftIdx, curIdx);
+    extract() {
+        if(this.values.length === 0) return 0
+
+        const root = this.values[0];
+        const element = this.values.pop();
+        if(this.values.length > 0) {
+            this.values[0] = element
+            this.sinkDown();
+        }
+        return root
+    }
+    sinkDown() {
+        let idx = 0
+        const element = this.values[0]
+        while(true) {
+            let swap = null;
+            let leftChildIdx = (idx * 2) + 1;
+            let rightChildIdx = (idx * 2) + 2;
+            let leftChild, rightChild
+            
+            if(leftChildIdx < this.values.length) {
+                leftChild = this.values[leftChildIdx]
+                if(leftChild < element) {
+                    swap = leftChildIdx
+                }
             }
-            return min;
+
+            if(rightChildIdx < this.values.length) {
+                rightChild = this.values[rightChildIdx]
+                if((swap === null && rightChild < element) ||
+            (swap !== null && rightChild < leftChild)) {
+                swap = rightChildIdx
+            }
         }
 
-        while(this.heap[leftIdx] < this.heap[curIdx] || this.heap[rightIdx] < this.heap[curIdx]) {
-            const minIdx = this.heap[leftIdx] > this.heap[rightIdx] ? rightIdx : leftIdx;
-            this.swap(minIdx, curIdx);
-            curIdx = minIdx;
-            leftIdx = curIdx * 2;
-            rightIdx = curIdx * 2 + 1;
+            if(swap === null) break;
+            this.values[idx] = this.values[swap]
+            this.values[swap] = element
+            idx = swap
         }
-
-        return min;
     }
 }
 
-const input = require('fs').readFileSync("/dev/stdin").toString().trim().split('\n')
-const N = Number(input.shift())
-const heap = new MinHeap()
-const result = []
-for(let i = 0; i < N; i++) {
-    if(+input[i] === 0) {
-        let check = heap.heappop()
-        if(check === undefined) result.push(0)
-        else result.push(check)
+const heap = new Heap();
+const answer = [];
+for(let i = 1; i < input.length; i++) {
+    if(input[i] === 0) {
+        answer.push(heap.extract())
+    } else {
+        heap.insert(input[i])
     }
-    else heap.heappush(+input[i])
 }
 
-console.log(result.join('\n'));
+console.log(answer.join('\n'))
