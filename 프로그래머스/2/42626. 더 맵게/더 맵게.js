@@ -1,72 +1,97 @@
-class MinHeap {
-    constructor() {
-        this.heap = [ null ];
+class Heap {
+    constructor () {
+        this.values = []
     }
-    
-    swap(a, b) {
-        [ this.heap[a], this.heap[b] ] = [ this.heap[b], this.heap[a] ];
+    insert(element) {
+        this.values.push(element)
+        this.bubbleUp();
     }
-    
-    heappush(value) {
-        this.heap.push(value);
-        let curIdx = this.heap.length - 1;
-        let parIdx = (curIdx / 2) >> 0;
+
+    bubbleUp() {
+        let idx = this.values.length-1;
+        let element = this.values[idx]
         
-        while(curIdx > 1 && this.heap[parIdx] > this.heap[curIdx]) {
-            this.swap(parIdx, curIdx)
-            curIdx = parIdx;
-            parIdx = (curIdx / 2) >> 0;
+        while(idx > 0) {
+            let parentIdx = Math.floor((idx-1)/2);
+            let parent = this.values[parentIdx]
+            if(parent <= element) break;
+            this.values[idx] = parent
+            this.values[parentIdx] = element
+            idx = parentIdx
         }
     }
-    
-    heappop() {
-        const min = this.heap[1];	
-        if(this.heap.length <= 2) this.heap = [ null ];
-        else this.heap[1] = this.heap.pop();   
-        
-        let curIdx = 1;
-        let leftIdx = curIdx * 2;
-        let rightIdx = curIdx * 2 + 1; 
-        
-        if(!this.heap[leftIdx]) return min;
-        if(!this.heap[rightIdx]) {
-            if(this.heap[leftIdx] < this.heap[curIdx]) {
-                this.swap(leftIdx, curIdx);
+
+    extract() {
+        if(this.values.length === 0) return -1
+        let root = this.values[0];
+        let end = this.values.pop();
+        if (this.values.length > 0) {
+            this.values[0] = end;
+            this.sinkDown();
+        }
+        return root;
+    }
+
+    sinkDown() {
+        let idx = 0;
+        let length = this.values.length;
+        let element = this.values[idx];
+
+        while(true) {
+            let swap = null;
+            let leftChildIdx = (idx * 2) + 1;
+            let rightChildIdx = (idx * 2) + 2;
+
+            let leftChild,rightChild
+            if(leftChildIdx < length) {
+                leftChild = this.values[leftChildIdx];
+                if(leftChild < element) {
+                    swap = leftChildIdx
+                }
             }
-            return min;
-        }
 
-        while(this.heap[leftIdx] < this.heap[curIdx] || this.heap[rightIdx] < this.heap[curIdx]) {
-            const minIdx = this.heap[leftIdx] > this.heap[rightIdx] ? rightIdx : leftIdx;
-            this.swap(minIdx, curIdx);
-            curIdx = minIdx;
-            leftIdx = curIdx * 2;
-            rightIdx = curIdx * 2 + 1;
+            if(rightChildIdx < length) {
+                rightChild = this.values[rightChildIdx];
+                if((swap === null && rightChild < element) ||
+            (swap !== null && rightChild < leftChild)) {
+                swap = rightChildIdx
+            }
+            }
+            
+            if(swap === null) break;
+            this.values[idx] = this.values[swap]
+            this.values[swap] = element
+            idx = swap
         }
-
-        return min;
     }
 }
 
 function solution(scoville, K) {
-    let heap = new MinHeap()
-    var answer = 0;
+    var answer = 0
+
+    const heap = new Heap();
     scoville.forEach(element => {
-        heap.heappush(element)
+        heap.insert(element)
     });
+
     while(true) {
-        min = heap.heappop()
-        if(min >= K) break;
-        if(heap.heap.length < 2) {
-            answer = -1
+        const food = heap.extract()
+
+        if(food < K) {
+            let secondFood = heap.extract();
+            if(secondFood === -1) {
+                answer = -1;
+                break;
+            }
+            
+            let newFood = food + (secondFood * 2)
+            answer++;
+            heap.insert(newFood)
+        } else {
             break;
         }
-        else {
-            answer +=1
-            second_min = heap.heappop()
-            min = min + ( second_min * 2 )
-            heap.heappush(min)
-        }
     }
+
     return answer;
 }
+
