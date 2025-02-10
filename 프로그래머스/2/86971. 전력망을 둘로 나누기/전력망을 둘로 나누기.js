@@ -1,57 +1,39 @@
 function solution(n, wires) {
-    let result = []
-    for(let i = 0; i < n; i++) {
-        let copyWires = JSON.parse(JSON.stringify(wires))
-        copyWires[i] = []
-        const node = Array.from({ length: n + 1 }, () => [])
-        const visited = new Array(n+1).fill(false)
-        createNode(node, copyWires)
-        let tempCount = []
-        for(let j = 1; j < n+1; j++) {
-            if(!visited[j] && node[j].length > 0) {
-                tempCount.push(bfs(j, node, visited))
-            }
-        }
-        result.push(tempCount)
-    }
-    let min = 100000000
-    for(let item of result) {
-        if(item.length === 2) {
-            let check = Math.max(...item) - Math.min(...item)
-            if(min > check) min = check
+  var answers = [];
+  for (let i = 0; i < n - 1; i++) {
+    const adjWires = Array.from({ length: n + 1 }, () => new Array());
+    sliceWires = [...wires.slice(0, i), ...wires.slice(i + 1, n)];
+    sliceWires.map((item) => {
+      adjWires[item[0]].push(item[1]);
+      adjWires[item[1]].push(item[0]);
+    });
+    let first = 0;
+    let second = 0;
+    let firstFlag = false;
+    const visited = new Array(n + 1).fill(false);
+    for (let i = 1; i <= n; i++) {
+      if (!visited[i]) {
+        if (firstFlag === false) {
+          first = dfs(adjWires, visited, i);
+          firstFlag = true;
         } else {
-            let check = item -1
-            if(min > check) min = check
+          second = dfs(adjWires, visited, i);
         }
+      }
     }
-    return min;
+    answers.push(Math.abs(first - second));
+  }
+  return Math.min(...answers);
 }
 
-function bfs(start, node, visited) {
-    const queue = []
-    let count = 0
-    queue.push(start)
-    visited[start] = true
-    while (queue.length > 0) {
-        let v = queue.shift()
-        count++;
-        for (const cur of node[v]) {
-            if (!visited[cur]) {
-                queue.push(cur)
-                visited[cur] = true
-            }
-        }
+const dfs = (graph, visited, node) => {
+  let count = 1;
+  visited[node] = true;
+  for (let i = 0; i < graph[node].length; i++) {
+    let next = graph[node][i];
+    if (!visited[next]) {
+      count += dfs(graph, visited, next);
     }
-    return count
-}
-
-function createNode(node, wires) {
-    for (let wire of wires) {
-        if(wire.length === 0) continue
-        let startNode = wire[0]
-        let endNode = wire[1]
-        node[startNode].push(endNode)
-        node[endNode].push(startNode)
-    }
-    return node
-}
+  }
+  return count;
+};
