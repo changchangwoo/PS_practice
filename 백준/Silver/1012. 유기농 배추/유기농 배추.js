@@ -1,48 +1,49 @@
-let fs = require("fs");
-let input = fs.readFileSync("/dev/stdin").toString().trim().split("\n");
-let input_count = input[0]
-input.shift()
-for(let i = 0; i < input_count; i++){
-    condition = input[0].split(' ')
-    M = +condition[0]
-    N = +condition[1]
-    K = +condition[2]
-    let field = Array.from(Array(M), () => Array(N).fill(0))
-    let visited = Array.from(Array(M), () => Array(N).fill(false))
-    let count = 0
+let input = require("fs")
+  .readFileSync("./dev/stdin")
+  .toString()
+  .trim()
+  .split("\n");
 
-    for(let j = 1; j <= K; j++) {
-        XY = input[j].split(' ')
-        X = +XY[0]
-        Y = +XY[1]
-        field[X][Y] = 1
-    }
+const dx = [-1, 1, 0, 0];
+const dy = [0, 0, -1, 1];
+const N = Number(input.shift());
 
-    function dfs(x, y) {
-        if(x <= -1 || x >= M || y <= -1 || y >= N) return false
-        if(field[x][y] == 1) {
-            field[x][y] = 0
-            visited[x][y] = true
-            dfs(x-1, y)
-            dfs(x+1, y)
-            dfs(x, y-1)
-            dfs(x, y+1)
-            return true
-        }
-        return false
-    }
+const BFS = (startX, startY, arr, visited, M, N) => {
+  const queue = [];
+  queue.push([startX, startY]);
+  visited[startX][startY] = true;
+  while (queue.length > 0) {
+    const [cx, cy] = queue.shift();
+    for (let i = 0; i < 4; i++) {
+      let nx = cx + dx[i];
+      let ny = cy + dy[i];
 
-    for(let a = 0; a < M; a++) {
-        for(let b = 0; b < N; b++) {
-            if(field[a][b] === 1 && visited[a][b] === false) {
-                dfs(a,b)
-                count++;
-            }
-        }
+      if (nx < 0 || nx >= M || ny < 0 || ny >= N) continue;
+      if (arr[nx][ny] === 0) continue;
+      if (visited[nx][ny] === true) continue;
+      visited[nx][ny] = true;
+      queue.push([nx, ny]);
     }
-    console.log(count)
-    count = 0
-    slice = input.slice(K+1, input.length)
-    input = slice
+  }
+};
+
+for (let i = 0; i < N; i++) {
+  let answer = 0;
+  const [M, N, K] = input.shift().split(" ").map(Number);
+  const arr = Array.from({ length: N }, () => new Array(M).fill(0));
+  const visited = Array.from({ length: N }, () => new Array(M).fill(false));
+  for (let i = 0; i < K; i++) {
+    const [X, Y] = input.shift().split(" ").map(Number);
+    arr[Y][X] = 1;
+  }
+
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < M; j++) {
+      if (arr[i][j] === 1 && visited[i][j] === false) {
+        BFS(i, j, arr, visited, N, M);
+        answer++;
+      }
+    }
+  }
+  console.log(answer);
 }
-
