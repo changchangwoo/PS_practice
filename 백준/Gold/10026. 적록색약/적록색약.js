@@ -1,65 +1,57 @@
-let fs = require('fs');
-let input = fs.readFileSync("/dev/stdin").toString().trim().split('\n')
-let n = input.shift()
-let graph = []
-let graph2= []
-let count = 0
-let count2 = 0
-let visited = Array.from({ length : +n}, () => new Array(+n).fill(false))
-let visited2 = Array.from({ length : +n}, () => new Array(+n).fill(false))
+/*
+적록색약인 사람은 빨강 초록 구분 없음
+빨강 = 초록 만들면 적록 색약 그래프
+*/
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const N = Number(input.shift());
+const visited = Array.from({ length: N }, () => new Array(N).fill(false))
+const visitedEx = Array.from({ length: N }, () => new Array(N).fill(false))
+const dx = [-1, 1, 0, 0]
+const dy = [0, 0, -1, 1]
+const arr = []
+const arrEx = []
+for (let i = 0; i < N; i++) {
+    arr.push(input[i].trim().split(''))
+    arrEx.push(input[i].trim().split('').map(item => {
+        if (item === "R") {
+            return "G"
+        } else return item
+    }));
+}
 
-
-function dfs(x, y, start) {
-    if(x <= -1 || x >= n || y <= -1 || y >= n || visited[x][y] === true || graph[x][y] != start) return false
-    else {
-        visited[x][y] = true
-        dfs(x-1, y, start)
-        dfs(x+1, y, start)
-        dfs(x, y-1, start)
-        dfs(x, y+1, start)
-        return true
+const bfs = (x, y, graph, visited, target) => {
+    const queue = [];
+    queue.push([x, y])
+    while (queue.length > 0) {
+        let [cx, cy] = queue.pop();
+        for (let i = 0; i < 4; i++) {
+            let nx = cx + dx[i]
+            let ny = cy + dy[i]
+            if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue
+            if (visited[nx][ny]) continue
+            if (graph[nx][ny] !== target) continue
+            visited[nx][ny] = true
+            queue.push([nx, ny])
+        }
     }
 }
 
-function dfs2(x, y, start) {
-    if(x <= -1 || x >= n || y <= -1 || y >= n || visited2[x][y] === true || graph2[x][y] != start) return false
-    else {
-        visited2[x][y] = true
-        dfs2(x-1, y, start)
-        dfs2(x+1, y, start)
-        dfs2(x, y-1, start)
-        dfs2(x, y+1, start)
-        return true
+const checkBfs = (arr, type, visited) => {
+    let count = 0;
+    let targets;
+    if (type === "ex") targets = ["G", "B"]
+    else targets = ["R", "G", "B"]
+    for (let target of targets) {
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                if (arr[i][j] === target && !visited[i][j]) {
+                    bfs(i, j, arr, visited, target)
+                    count++;
+                }
+            }
+        }
     }
+    return count
 }
 
-for(let i = 0; i < input.length; i++) {
-    let temp = []
-    let temp2 = []
-    for(let j = 0; j < input.length; j++) {
-        temp.push(input[i][j])
-        if(input[i][j] === 'G') temp2.push('R')
-        else temp2.push(input[i][j])
-    }
-    graph.push(temp)
-    graph2.push(temp2)
-}
-
-for(let i = 0; i < input.length; i++) {
-    for(let j =0 ; j <input.length; j++) {
-        if(visited[i][j] === true) continue
-        dfs(i,j,graph[i][j])
-        count++
-    }
-}
-
-
-for(let i = 0; i < input.length; i++) {
-    for(let j =0 ; j <input.length; j++) {
-        if(visited2[i][j] === true) continue
-        dfs2(i,j,graph2[i][j])
-        count2++;
-    }
-}
-
-console.log(count, count2)
+console.log(checkBfs(arr, null, visited), checkBfs(arrEx, "ex", visitedEx))
