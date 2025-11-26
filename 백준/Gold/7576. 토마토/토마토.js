@@ -1,60 +1,57 @@
-let input = require("fs")
-    .readFileSync("/dev/stdin")
-    .toString()
-    .trim()
-    .split("\n");
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const [M, N] = input.shift().split(' ').map(Number)
+const visited = Array.from({ length: N }, () => new Array(M).fill(false))
+const dx = [-1, 1, 0, 0]
+const dy = [0, 0, -1, 1]
 
-let [N, M] = input.shift().split(" ").map(Number);
-let graph = input.map((data) => data.split(" ").map(Number));
-let visited = Array.from({ length: M }, () => Array(N).fill(false));
-let queue = []
-let max = 0;
-let flag = 0;
-const dx = [0, 0, -1, 1];
-const dy = [-1, 1, 0, 0];
+const init = [];
+const graph = input.map((item, idx) =>
+    item.split(' ').map((d_item, d_idx) => {
+        if (d_item === "1") init.push([idx, d_idx])
+        return Number(d_item)
+    })
+)
 
-for (let i = 0; i < M; i++) {
-    for (let j = 0; j < N; j++) {
-        if (graph[i][j] === 1) {
-            queue.push([i,j])
-            visited[i][j] = true
-        }
-    }
-}
-
-function bfs() {
+const bfs = () => {
+    let count = 0;
     let front = 0;
-    let rear = queue.length;
-    while (front < rear) {
-        let [x, y] = queue[front++];
-        visited[x][y] = true
-
+    const queue = []
+    init.forEach(element => {
+        const [el, ex] = element
+        visited[el][ex] = true
+        queue.push(element)
+    });
+    while (front < queue.length) {
+        let [cx, cy] = queue[front++];
         for (let i = 0; i < 4; i++) {
-            let nx = x + dx[i];
-            let ny = y + dy[i];
-            if (nx < 0 || nx >= M || ny < 0 || ny >= N) continue;
-            if (visited[nx][ny] || graph[nx][ny] === -1) continue;
-            else {
-                visited[nx][ny] = true;
-                graph[nx][ny] = graph[x][y] + 1;
-                queue[rear++] = [nx, ny];
-            }
+            let nx = cx + dx[i]
+            let ny = cy + dy[i]
+            if (nx < 0 || nx >= N || ny < 0 || ny >= M) continue
+            if (visited[nx][ny]) continue
+            if (graph[nx][ny] === -1) continue;
+            visited[nx][ny] = true
+            graph[nx][ny] = graph[cx][cy] + 1;
+            queue.push([nx, ny])
+            count++;
+        }
+    }
+    return count;
+}
+
+const count = bfs();
+
+let max = 0;
+for (let line of graph) {
+    max = Math.max(max, ...line);
+    for (let item of line) {
+        if (item === 0) {
+            console.log(-1)
+            return
         }
     }
 }
-
-bfs();
-
-for (let i = 0; i < M; i++) {
-    for (let j = 0; j < N; j++) {
-        if (graph[i][j] === 0) {
-            flag = 1;
-            break;
-        }
-        if (flag === 1) break;
-        if (graph[i][j] > max) max = graph[i][j];
-    }
+if (count === 0) {
+    console.log(0)
+    return
 }
-
-if (flag === 1) console.log(-1);
-else console.log(max - 1);
+console.log(max - 1)
