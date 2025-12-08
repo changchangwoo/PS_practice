@@ -1,31 +1,30 @@
-let fs = require('fs');
-let input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
-const N = Number(input[0])
-const arr = input[1].split(' ').map(Number)
-
-const visited = new Array(N+1).fill(false)
-const result = []
-const answer = []
-const backtracking = () => {
-  if(result.length === N) {
-    let sum = 0
-    for(let i = 0; i < N-1; i++) {
-      sum += Math.abs(result[i]-result[i+1])
-    }
-    answer.push(sum)
-    return
-  }
-  for (let i = 0 ; i < N; i++) {
-    if (visited[i] === false) {
-      visited[i] = true
-      result.push(arr[i])
-      backtracking()
-      visited[i] = false
-      result.pop();
-    }
-  }
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const N = Number(input.shift());
+const arr = input.shift().split(' ').map(Number)
+let max = -Infinity
+const comb = []
+const visited = new Array(N).fill(false)
+const calc = (arr) => {
+    let sum = 0;
+   for(let i = 0; i < arr.length-1; i++) {
+    sum += Math.abs(arr[i] - arr[i+1]);
+   } 
+   return sum
 }
-
-backtracking();
-
-console.log(Math.max(...answer))
+const dfs = () => {
+    if(comb.length === N) {
+        let calComb = calc(comb)
+        if(calComb > max) max = calComb
+        return
+    }
+    for(let i = 0; i < N; i++) {
+        if(visited[i]) continue;
+        visited[i] = true
+        comb.push(arr[i])
+        dfs()
+        comb.pop()
+        visited[i] = false
+    }
+}
+dfs();
+console.log(max)
