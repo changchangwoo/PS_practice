@@ -1,31 +1,32 @@
-const input = require("fs")
-  .readFileSync("./dev/stdin")
-  .toString()
-  .trim()
-  .split("\n");
-const [N, M] = input.shift().split(" ").map(Number);
-const stack = [];
-let answer = 0;
-const arr = input.shift().split(" ").map(Number);
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const [N, M] = input.shift().split(' ').map(Number)
+const arr = input.shift().split(' ').map(Number)
 
-for (let i = 0; i < M; i++) {
-  if (stack.length < N && !stack.includes(arr[i])) {
-    stack.push(arr[i]);
-  } else if (stack.length >= N && !stack.includes(arr[i])) {
-    let tempArr = [];
-    for (let j = i + 1; j < M; j++) {
-      if (stack.includes(arr[j]) && !tempArr.includes(arr[j]))
-        tempArr.push(arr[j]);
+const stack = []
+let answer = 0 
+arr.forEach((item, idx) => {
+    if(!stack.includes(item)) {
+        if(stack.length === N) {
+            let remove_idx = 0
+            let max_count = 0;
+            stack.forEach((stack_item, in_idx) => {
+            let count = 0; 
+            for(let i = idx; i < M; i++) {
+                if(arr[i] === stack_item) break;
+                count++;
+            }  
+            if(max_count < count) {
+                max_count = count
+                remove_idx = in_idx
+            }
+            });
+            stack[remove_idx] = item
+            answer++;
+        } else {
+        stack.push(item)
+        }
     }
-    for (let item of stack) {
-      if (!tempArr.includes(item)) tempArr.push(item);
-    }
-    let removeItem = tempArr.pop();
-    let removeIdx = stack.indexOf(removeItem);
-    stack.splice(removeIdx, 1);
-    stack.push(arr[i]);
-    answer++;
-  }
-}
 
-console.log(answer);
+});
+
+console.log(answer)
