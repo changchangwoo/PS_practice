@@ -1,40 +1,34 @@
-/*
-백트래킹이 가능한 범위
-=> 일단 중복 없는 것들로다가 다 구하고 대소 관계를 돌려볼까?
-=> 백트래킹을 하면서 조건에 대소 관계를 확인하고 맞는것들만 넣을까?? == 이거다
-
-*/
-let fs = require('fs');
-let input = fs.readFileSync('/dev/stdin').toString().trim().split('\n');
-
-let N = Number(input[0])
-let M = input[1].split(' ')
-
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const N = Number(input.shift());
+const arr = input.shift().split(' ')
 const visited = new Array(10).fill(false)
-const result = []
-const arr = []
-const backtracking = () => {
-    if(arr.length === N+1){
-        for(let i = 1; i < arr.length; i++) {
-            if(M[i-1] === "<" && !(arr[i-1] < arr[i])) return
-            else if(M[i-1] === ">" && !(arr[i-1] > arr[i])) return
-        }
-        result.push([...arr])
+const numbers = [];
+const answers = []
+const checkNumbers = (prev, cur, sign) => {
+    if (sign === "<" && (prev < cur)) {
+        return true
+    }
+    if (sign === ">" && (prev > cur)) {
+        return true
+    }
+    return false
+}
+const dfs = (prev) => {
+    if (numbers.length === N + 1) {
+        answers.push(numbers.join(''))
         return
     }
     for (let i = 0; i <= 9; i++) {
-        if(visited[i] === false) {
-            visited[i] = true
-            arr.push(i)
-            backtracking();
-            visited[i] = false;
-            arr.pop();
-        }
+        if (visited[i]) continue
+        if (numbers.length >= 1 && (!checkNumbers(prev, i, arr[numbers.length - 1]))) continue
+        numbers.push(i)
+        visited[i] = true
+        dfs(i);
+        numbers.pop();
+        visited[i] = false
     }
 }
-
-backtracking();
-
-const numResult = result.map(values => values.join(''))
-console.log(numResult[numResult.length-1])
-console.log(numResult[0])
+dfs(0);
+let sortAnswers = answers.sort()
+console.log(sortAnswers[sortAnswers.length - 1])
+console.log(sortAnswers[0])
