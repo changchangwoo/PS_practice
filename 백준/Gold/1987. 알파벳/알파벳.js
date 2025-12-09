@@ -1,37 +1,25 @@
-let fs = require('fs');
-let input = fs.readFileSync("/dev/stdin").toString().trim().split('\n');
-let NM = input.shift().split(' ');
-let N = +NM[0];
-let M = +NM[1];
-let graph = [];
-let visited = Array.from({length: N}, () => Array(M).fill(false));
-let maxCount = 0;
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const [N, M] = input.shift().split(' ').map(Number)
+const arr = input.map(element => element.trim().split('')
+);
+const visited = new Array(26).fill(false)
 
-for (let i = 0; i < N; i++) {
-    let temp = input[i].trim().split('');
-    graph.push(temp);
-}
+const dx = [-1, 1, 0, 0]
+const dy = [0, 0, -1, 1]
+let max = 0;
 
-function dfs(x, y, count, visitHistory) {
-    if (x < 0 || x >= N || y < 0 || y >= M) return;
-    if (!visited[x][y]) {
-        if (visitHistory[graph[x][y].charCodeAt() - 65]) return;
-
-        visited[x][y] = true;
-        count++;
-        visitHistory[graph[x][y].charCodeAt() - 65] = true;
-        dfs(x, y + 1, count, visitHistory);
-        dfs(x + 1, y, count, visitHistory);
-        dfs(x - 1, y, count, visitHistory);
-        dfs(x, y - 1, count, visitHistory);
-        maxCount = Math.max(maxCount, count);
-
-        visited[x][y] = false;
-        visitHistory[graph[x][y].charCodeAt() - 65] = false;
+const dfs = (x, y, count) => {
+    max = Math.max(max, count)
+    for (let i = 0; i < 4; i++) {
+        const nx = x + dx[i]
+        const ny = y + dy[i]
+        if (nx < 0 || nx >= N || ny < 0 || ny >= M) continue
+        if (visited[arr[nx][ny].charCodeAt() - 65]) continue
+        visited[arr[nx][ny].charCodeAt() - 65] = true
+        dfs(nx, ny, count + 1)
+        visited[arr[nx][ny].charCodeAt() - 65] = false
     }
 }
-
-let initialVisitHistory = Array(26).fill(false);
-dfs(0, 0, 0, initialVisitHistory);
-
-console.log(maxCount);
+visited[arr[0][0].charCodeAt() - 65] = true
+dfs(0, 0, 1)
+console.log(max)
