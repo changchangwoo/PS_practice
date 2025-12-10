@@ -1,22 +1,18 @@
-let input = require("fs")
-  .readFileSync("./dev/stdin")
-  .toString()
-  .trim()
-  .split("\n");
-
-const [N, M] = input.shift().split(" ").map(Number);
-const Narr = input.splice(0, N);
-const Marr = input.splice(0, M);
+const input = require('fs').readFileSync("/dev/stdin").toString().trim().split("\n")
+const [N, M] = input.shift().split(' ').map(Number)
 const hash = new Map();
-Narr.forEach((element) => {
-  element = element.trim();
-  hash.set(element, hash.get(element) ? hash.get(element) + 1 : 1);
-});
-Marr.forEach((element) => {
-  element = element.trim();
-  hash.set(element, hash.get(element) ? hash.get(element) + 1 : 1);
-});
-const filterArr = [...hash].filter((element) => element[1] === 2).sort();
-const answer = filterArr.map((item) => item[0]);
-console.log(answer.length);
-console.log(answer.join("\n"));
+const answers = []
+for (let i = 0; i < N; i++) {
+    hash.set(input[i], true)
+}
+input.splice(0, N)
+for (let j = 0; j < M; j++) {
+    if (hash.get(input[j])) {
+        answers.push(input[j])
+    }
+}
+console.log(answers.length)
+if (answers.length === 0) {
+    return
+}
+console.log(answers.sort().join("\n"))
