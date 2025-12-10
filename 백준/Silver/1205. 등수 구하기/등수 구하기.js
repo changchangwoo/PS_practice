@@ -1,68 +1,47 @@
-let fs = require('fs')
-let input = fs.readFileSync("/dev/stdin").toString().trim().split('\n')
-let arr = []
-let NMP = input[0].split(' ')
-let N = +NMP[0]
-let M = +NMP[1]
-let P = +NMP[2]
-let curIndex = 0
-let flag = 2
-let answer = 0
-
-function getRank(ranks, target) {
-    let cur = null
-    let rank = 1
-    let rankAdd = 0
-    let checking = 0
-    for(let i = 0; i < ranks.length; i++) {
-        if(checking === 0 && ranks[i] === target) checking = 1
-        else if(checking === 1 && ranks[i] !== target) {
-            break
-        } 
-        if (ranks[i] !== cur) {
-            rank += rankAdd
-            rankAdd = 1
-            cur = ranks[i]
-        } else {
-            rankAdd++;
-        }
-    }
-    return rank
-}
-
-if (N > 0) {
-    input[1].split(' ').map(item => arr.push(+item))
-    arr.sort((a, b) => b - a)
-    for (let i = 0; i < +N; i++) {
-        if (M >= arr[i]) {
-            if (arr.lastIndexOf(M) === -1) {
-                flag = 1
-                curIndex = i
-                break
-            } else {
-                flag = 0
-                break
-            }
-        }
-    }
-
-    let lastRank = arr.lastIndexOf(M)
-    if (flag === 1) arr.splice(curIndex, 0, M)
-    if (flag === 0) arr.splice(lastRank + 1, 0, M)
-    if (lastRank + 1 >= P) {
-        console.log(-1)
-    } else if (flag === 2) {
-        if (arr.length < P) {
-            arr.push(M)
-            answer = getRank(arr, M)
-            console.log(answer)
-        }
-        else console.log(-1)
-    } else {
-        answer = getRank(arr, M)
-        console.log(answer)
-    }
-
-} else if (N <= 0) {
+/*
+점수가 랭킹 리스트에 올라갈 수 없을정도로 낮다면 -1 출력
+랭킹리스트 꽉 찬 경우, 새 점수가 이전 점수보다 좋을때만 바뀐다
+=> 동일 랭킹의 마지막으로 들어간다
+*/
+const input = require('fs').readFileSync("./dev/stdin").toString().trim().split("\n")
+const [N, score, P] = input.shift().split(' ').map(Number)
+if (N === 0) {
     console.log(1)
+    return
 }
+const arr = input.shift().split(' ').map(Number).sort((a, b) => b - a)
+const newRanking = []
+let rank = 1;
+let diff = 1;
+let isTry = false
+arr.forEach((el, idx) => {
+    if (score > el && !isTry) {
+        newRanking.push({ score: score, rank: rank, isMine: true })
+        isTry = true
+    }
+    newRanking.push({ score: el, rank: rank, isMine: false })
+});
+if (!isTry) newRanking.push({ score: score, rank: rank, isMine: true })
+
+for (let i = 1; i < newRanking.length; i++) {
+    if (newRanking[i - 1].score === newRanking[i].score) {
+        newRanking[i].rank = rank
+        diff++
+    } else {
+        rank = rank + diff
+        newRanking[i].rank = rank
+        diff = 1
+    }
+}
+
+for (let i = 0; i < newRanking.length; i++) {
+    if (newRanking[i].isMine === true) {
+        console.log(newRanking[i].rank)
+        return
+    }
+    if (i === P - 1) {
+        console.log(-1)
+        return
+    }
+}
+
