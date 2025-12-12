@@ -16,27 +16,22 @@ const calcRating = (startTeamArr, arr) => {
             linkArr.push(i)
         }
     }
-    const innerResult = []
-    const visited = new Array(startTeamArr.length).fill(false)
 
-    const innerDFS = (innerArr, sum) => {
-        if(innerResult.length === 2) {
-            return sum + arr[innerResult[0]-1][innerResult[1]-1]
+const calc = (innerArr) => {
+    let sum = 0;
+    for (let i = 0; i < innerArr.length; i++) {
+        for (let j = i + 1; j < innerArr.length; j++) {
+            const a = innerArr[i] - 1;
+            const b = innerArr[j] - 1;
+            sum += arr[a][b] + arr[b][a];
         }
-        let total = 0;
-        for(let i = 0 ; i < innerArr.length; i++) {
-            if(visited[i]) continue;
-            visited[i] = true
-            innerResult.push(innerArr[i])
-            total += innerDFS(innerArr, sum);
-            visited[i] = false
-            innerResult.pop();
-        }
-        return total
     }
+    return sum;   
+}
 
-    let startTeamTotal = innerDFS(startTeamArr, 0)
-    let linkTeamTotal = innerDFS(linkArr, 0)
+
+startTeamTotal = calc(startTeamArr)
+linkTeamTotal = calc(linkArr)
    return Math.abs(startTeamTotal - linkTeamTotal)
 
 }
@@ -52,4 +47,4 @@ const dfs = (v, arr) => {
     }
 }
 dfs(1, arr);
-console.log(Math.min(...answers))
+console.log(Math.min(...answers));
