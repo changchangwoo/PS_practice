@@ -1,77 +1,67 @@
+/*
+모든 음식의 스코빌 지수를 K 이상으로 만들 수 없는 경우
+=> 모든 값이 0 일 때 ?
+
+*/
 class minHeap {
     constructor() {
-        this.values = []
+        this.heap = []
     }
-    insert(el) {
-        this.values.push(el)
-        this.bubbleUp();
+    push(e) {
+        this.heap.push(e)
+        this.up_();
     }
-    bubbleUp() {
-        let idx = this.values.length - 1;
-        let element = this.values[idx]
-        while (idx > 0) {
-            let parentIdx = Math.floor((idx - 1) / 2)
-            let parent = this.values[parentIdx]
-            if (this.values[idx] >= parent) break;
-            this.values[idx] = parent
-            this.values[parentIdx] = element
-            idx = parentIdx
-        }
-    }
-    export() {
-        if (this.values.length === 0) return null
-        if (this.values.length === 1) return this.values.pop();
-        let root = this.values[0]
-        this.values[0] = this.values.pop();
-        this.sinkDown();
+    pop() {
+        if(this.heap.length === 0) return null;
+        if(this.heap.length === 1) return this.heap.pop();
+        const root = this.heap[0]
+        this.heap[0] = this.heap.pop();
+        this.down_();
         return root
+        
     }
-    sinkDown() {
-        let idx = 0;
-        let element = this.values[idx]
-        let len = this.values.length
-        while (true) {
-            let leftChild, rightChild;
-            let swap = null;
-            let leftChildIdx = (idx * 2) + 1
-            let rightChildIdx = (idx * 2) + 2
-            if (leftChildIdx < len) {
-                leftChild = this.values[leftChildIdx]
-                if (this.values[idx] > leftChild) {
-                    swap = leftChildIdx
-                }
-            }
-            if (rightChildIdx < len) {
-                rightChild = this.values[rightChildIdx]
-                if ((swap === null && element > rightChild) ||
-                    (swap !== null) && leftChild > rightChild) {
-                    swap = rightChildIdx
-                }
-            }
-            if (!swap) return
-            this.values[idx] = this.values[swap]
-            this.values[swap] = element;
-            idx = swap
+    up_() {
+        let idx = this.heap.length-1;
+        while(idx > 0) {
+            let parentIdx = Math.floor((idx - 1) / 2)
+            if(this.heap[idx] < this.heap[parentIdx]) {
+                [this.heap[idx], this.heap[parentIdx]] = [this.heap[parentIdx], this.heap[idx]]
+                idx = parentIdx;
+            } else break;
         }
+        
     }
-
-
+    down_() {
+        let idx = 0;
+        let len = this.heap.length
+        while(true) {
+            let smallest = idx;
+            let left = idx * 2 + 1;
+            let right = idx * 2 + 2;
+            if(left < len && this.heap[left] < this.heap[smallest]) {
+                smallest = left
+            }
+            if(right < len && this.heap[right] < this.heap[smallest]) {
+                smallest = right
+            }
+            if(smallest === idx) break;
+            [this.heap[idx], this.heap[smallest]] = [this.heap[smallest], this.heap[idx]]
+            idx = smallest
+        }
+        
+    }
 }
 function solution(scoville, K) {
     var answer = 0;
     const heap = new minHeap();
-    scoville.forEach(element => {
-        heap.insert(element)
-    });
-    while (true) {
-        ingre1 = heap.export();
-        ingre2 = heap.export();
-        if (ingre1 >= K) break
-        if (!ingre1 || !ingre2) return -1
-        heap.insert(ingre1 + (ingre2 * 2))
+    
+    for(item of scoville) heap.push(item)
+    while(heap.heap.length > 1 && heap.heap[0] < K) {
+        let food1 = heap.pop();
+        let food2 = heap.pop();
+        heap.push(food1 + (food2 * 2))
         answer++;
     }
-    return answer
+    
+    return heap.heap[0] < K ? -1 : answer;
 }
-
-console.log(solution([1, 2, 3, 9, 10, 12], 123123))
