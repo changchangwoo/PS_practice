@@ -1,14 +1,14 @@
 function solution(phone_book) {
     var answer = true;
-    const map = new Map()
-    phone_book.forEach(element => {
-        map.set(element, true)
-    });
-    phone_book.forEach(element => {
-        for(let i = 0; i < element.length; i++) {
-            const str = element.slice(0,i)
-            if(map.get(str)) answer = false
+    const sort_book = phone_book.sort((a, b) => a.length - b.length)
+    const hash = new Map();
+    for(item of sort_book) {
+        let str = ''
+        for(char of item) {
+            str += char
+            if(hash.has(str)) return false
         }
-    });
+        hash.set(item, true) 
+    }
     return answer;
 }
