@@ -1,33 +1,26 @@
-function solution(priorities, location) {
-    var obj = [];
-    let count = 1
-    for(let i = 0; i < priorities.length; i++) {
-        obj.push({prior : priorities[i], num : i})
-    }
-    let maxNum = max(obj)
-    while(true) {
-        if(obj[0].prior === maxNum) {
-            if(obj[0].num === location) {
-                break
-            } else if (obj[0].num != location) {
-                count += 1
-                obj.splice(0, 1)
-                maxNum = max(obj)
-            }
-        } else {
-            obj.push(obj[0])
-            obj.splice(0, 1)
-        }
-    }
-    return count
-}
+/*
+수가 크지 않으니 매 순회마다 가장 큰 걸 찾고 그거 나올때까지 반복
+*/
 
-function max(obj) {
-    let maxVal = obj[0].prior
-    obj.forEach(element => {
-        if(element.prior > maxVal) {
-            maxVal = element.prior
+function solution(priorities, location) {
+    var answer = 0;
+    const stack = []
+    for(let i = 0; i < priorities.length; i++) {
+        stack.push({pr : priorities[i], id : i})
+    }
+    let max = [...stack].sort((a, b) => b.pr - a.pr)[0].pr
+    while(true) {
+        let item = stack.shift();
+        if(item.pr === max && item.id === location) {
+                    answer++;
+                    break;
+        } else if (item.pr === max) {
+                    answer++;
+                    max = [...stack].sort((a, b) => b.pr - a.pr)[0].pr
+            
+        } else {
+            stack.push(item)
         }
-    });
-    return maxVal
+    }
+    return answer;
 }
