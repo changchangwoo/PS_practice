@@ -1,49 +1,50 @@
-/*
-종이 조각을 붙여 소수 개수 찾기
-numbers 1이상 7이하 => 백트래킹, 완전탐색
-numbers를 길이별로 탐색해서 값을 넣는다
-그 값을 가지고 소수를 판별
-*/
+// 1000만까지 나오니까 이거는 에라토스테네스의 체 못쓰는거아님?
 
 function solution(numbers) {
-    let answer = []
-    const result = []
-    let count = 0
-    let visited = new Array(numbers.length).fill(false)
-    function dfs(num) {
-        if(result.length === num) {
-            answer.push(result.join(''))
-            return
+    var answer = 0;
+    const temp_primary = [];
+    
+    function dfs(limit, arr, visited) {
+        if(arr.length === limit) {
+            temp_primary.push(+arr.join(''))
+            return;
         }
-        for (let i = 0; i < numbers.length; i++ ) {
-            if(!visited[i]) {
-                visited[i] = true
-                result.push(numbers[i])
-                dfs(num)
-                visited[i] = false
-                result.pop()
+        for(let i = 0; i < numbers.length; i++) {
+            if(!visited[i]) { 
+            visited[i] = true
+            arr.push(numbers[i]);
+            dfs(limit, arr, visited)
+            arr.pop();
+            visited[i] = false
             }
         }
+        return 
     }
+
     for(let i = 1; i <= numbers.length; i++) {
-        dfs(i)
+        const arr = []
+        const visited = new Array(numbers.length + 1).fill(false)
+        dfs(i, arr, visited)    
     }
-    answer = answer.map(val => +val)
-    let set = new Set(answer)
-    for(let item of set) {
-        if(item < 2) continue
-        else {
-            if(isPrime(item)) count++;
-        }
+    for(const temp of [...new Set(temp_primary)]) {
+       if(isPrime(temp)) answer++;
     }
-    return count
+    
+    
+    return answer;
 }
 
-function isPrime(value) {
-    for(var i = 2; i <= Math.sqrt(value); i++) {
-        if(value%i ==0) {
-            return false
+function isPrime(num) {
+    let flag = true
+    if(num ===1 || num ===0) return false
+    for(let i = 2 ; i < num; i++) {
+        if(num % i === 0) {
+            flag = false;
+            break;
         }
     }
-    return true
+    return flag ? true : false
+    
 }
+
+
