@@ -1,26 +1,12 @@
 function solution(sizes) {
-
-    let answer;
-    let width = [];
-    let height = [];
+    let wMax = 0;
+    let hMax = 0;
     for(let i = 0; i < sizes.length; i++) {
-        let [size_width, size_height] = sizes[i]
-        width.push(size_width)
-        height.push(size_width < size_height ? size_width : size_height)
+        if(sizes[i][0] < sizes[i][1]) {
+            [sizes[i][0], sizes[i][1]] = [sizes[i][1], sizes[i][0]]
+        }
+        if(wMax < sizes[i][0]) wMax = sizes[i][0]
+        if(hMax < sizes[i][1]) hMax = sizes[i][1]
     }
-
-    widthFirst = Math.max(...width) * Math.max(...height)
-
-    width = [];
-    height = [];
-    for(let i = 0; i < sizes.length; i++) {
-        let [size_width, size_height] = sizes[i]
-        width.push(size_width < size_height ? size_width : size_height)
-        height.push(size_height)
-    }
-
-    heightFirst = Math.max(...width) * Math.max(...height)
-
-
-    return widthFirst > heightFirst ? widthFirst : heightFirst
+    return wMax * hMax;
 }
