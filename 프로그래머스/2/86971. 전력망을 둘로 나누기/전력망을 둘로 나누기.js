@@ -1,39 +1,47 @@
+/*
+
+*/
 function solution(n, wires) {
-  var answers = [];
-  for (let i = 0; i < n - 1; i++) {
-    const adjWires = Array.from({ length: n + 1 }, () => new Array());
-    sliceWires = [...wires.slice(0, i), ...wires.slice(i + 1, n)];
-    sliceWires.map((item) => {
-      adjWires[item[0]].push(item[1]);
-      adjWires[item[1]].push(item[0]);
-    });
-    let first = 0;
-    let second = 0;
-    let firstFlag = false;
-    const visited = new Array(n + 1).fill(false);
-    for (let i = 1; i <= n; i++) {
-      if (!visited[i]) {
-        if (firstFlag === false) {
-          first = dfs(adjWires, visited, i);
-          firstFlag = true;
-        } else {
-          second = dfs(adjWires, visited, i);
+    var answer = Infinity;
+    for(let i = 1; i <= n; i++) {
+        const graph = Array.from({length : n+ 1}, () => new Array())
+        for(let j = 0; j < wires.length; j++) {
+            const [s, e] = wires[j]
+            if(s === i || e === i) continue;
+            graph[s].push(e)
+            graph[e].push(s)
         }
-      }
+        const visited = new Array(n+1).fill(false)
+
+        function bfs(s) {
+        let count = 1;
+        const queue = []
+        queue.push(s)
+        visited[s] = true
+        while(queue.length > 0) {
+            const cur = queue.shift();
+            for(let i = 0; i < graph[cur].length; i++) {
+                if(!visited[graph[cur][i]]) {
+                    queue.push(graph[cur][i])
+                    count++;
+                    visited[graph[cur][i]] = true
+                }
+            }
+           }
+        return count
+        }
+        let temp = []
+        for(let i = 1; i < n+1; i++) {
+            if(!visited[i]) {
+                temp.push(bfs(i))
+            }
+
+        }
+        temp.sort((a, b) => b - a);
+        let a = temp.shift();
+        let b = temp.reduce((acc, cur) => acc + cur, 0)
+        answer = Math.min(answer, Math.max(a, b)- Math.min(a, b))
     }
-    answers.push(Math.abs(first - second));
-  }
-  return Math.min(...answers);
+    return answer;
 }
 
-const dfs = (graph, visited, node) => {
-  let count = 1;
-  visited[node] = true;
-  for (let i = 0; i < graph[node].length; i++) {
-    let next = graph[node][i];
-    if (!visited[next]) {
-      count += dfs(graph, visited, next);
-    }
-  }
-  return count;
-};
