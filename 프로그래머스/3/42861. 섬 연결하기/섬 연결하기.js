@@ -1,31 +1,40 @@
-function getParent(parent, idx) {
-    if(parent[idx] === idx) return idx
-    return parent[idx] = getParent(parent, parent[idx])
+/*
+n개의 섬 사이, 다리를 건설하는 비용
+모든 선이 통행 가능해야한다 => 간선은 n-1개
+costs[i][0], costs[i][1] => 연결되는 두 섬의 번호
+같은 부모로 향하는 
+*/
+function getParent(a, arr) {
+    if(arr[a] === a) return a
+    arr[a] = getParent(arr[a], arr)
+    return arr[a]
 }
-function unionParent(parent, idx1, idx2) {
-    const p1 = getParent(parent, idx1)
-    const p2 = getParent(parent, idx2)
-    if(p1 < p2) parent[p2] = p1
-    else parent[p1] = p2
+function unionParent(a, b, arr) {
+    let A = getParent(a, arr)
+    let B = getParent(b, arr)
+    if(A < B) arr[A] = arr[B]
+    else arr[B] = arr[A]
+    return
 }
-function findParent(parent, idx1, idx2) {
-    const p1 = getParent(parent, idx1)
-    const p2 = getParent(parent, idx2)
-    if(p1 === p2) return true
-    return false
+function findParent(a , b, arr) {
+    let A = getParent(a, arr)
+    let B = getParent(b, arr)
+    if(A === B) return true
+    else return false
 }
+
 function solution(n, costs) {
-    var answer = []
-    const sorted_cost = costs.sort((a, b) => a[2] - b[2]);
-    const arr = []
-    for(let i = 0; i <= n; i++) arr[i] = i
-    for(item of sorted_cost) {
-        if(answer.length === n-1) break; 
-        const [v1, v2, cost] = item
-        if(!findParent(arr, v1, v2)) {
-            unionParent(arr, v1, v2)
-            answer.push(cost)
+    var answer = 0;
+    const parent = Array.from({ length: n + 1 }, (_, i) => i)
+    costs.sort((a, b) => a[2] - b[2])
+    let count = 0;
+    for(const [s,e,v] of costs) {
+        if(count === n-1) break;
+        if(!findParent(s, e, parent)) {
+            answer += v
+            count++;
+            unionParent(s, e, parent)
         }
     }
-    return answer.reduce((acc, cur) => acc + cur, 0)
+    return answer;
 }
