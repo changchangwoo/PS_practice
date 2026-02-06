@@ -1,31 +1,29 @@
 /*
-경로의 개수를 구하는 것 => 탐색이 아닌 DP
-DP[0][0] = 1
-이전 값에서 올 수 있는 방향이 1개 => 이전 DP 값 그대로
-이전 값에서 올 수 있는 방향이 2개 => 이전 DP 값 + 1
-
+도착 지점을 기준으로 좌측에서 오거나 상단에서 올 수 있음
 */
-
 function solution(m, n, puddles) {
     var answer = 0;
-    const DP = Array.from({length : n}, () => new Array(m).fill(0))
-    for(const [x, y] of puddles) {
-        DP[y-1][x-1] = -1
+    const MOD = 1000000007
+    const dp = Array.from({length : n+1}, () => new Array(m+1).fill(0))
+    const hash = new Map();
+    for(const [px, py] of puddles) {
+       hash.set(`${py} ${px}`, true)
     }
     
-    DP[0][0] = 1
-    for(let i = 0; i < n; i++) {
-        for(let j =0; j < m; j++) {
-            if(i === 0 && j === 0) continue;
-            if(DP[i][j] === -1) {
-                DP[i][j] = 0
-                continue
-            }            
-            const up = i > 0 ? DP[i-1][j] : 0
-            const left = j > 0 ? DP[i][j-1] : 0
+    dp[1][1] = 1
+    for(let i = 1 ; i <= n; i++) {
+        for(let j = 1; j <= m; j++) {
+            if(hash.get(`${i} ${j}`)) continue;
+
+            // 이전 위치가 벽인 경우
+            if(i === 1 && j > 1) dp[i][j] += dp[i][j-1] % MOD 
+            if(j === 1 && i > 1) dp[i][j] += dp[i-1][j] % MOD
+            if(i > 1 && j > 1) {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1] % MOD                
+            }
             
-            DP[i][j] = (up + left) % 1000000007;
         }
     }
-    return DP[n-1][m-1]
+    return dp[n][m] % MOD;
 }
+
