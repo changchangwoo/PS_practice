@@ -1,35 +1,41 @@
-function adjacencyMatrixToAdjacencyList(matrix) {
-    const n = matrix.length;
-    const adjacencyList = new Array(n).fill(null).map(() => []);
-    for (let i = 0; i < n; i++) {
-        for (let j = 0; j < n; j++) {
-            if (matrix[i][j] === 1) {
-                adjacencyList[i].push(j + 1);
+/*
+1. 유니온파인드로도 찾을 수 있을 것 같고
+2. bfs로도 찾을 수 있을 것 같음
+*/
+function solution(n, computers) {
+    const graph = Array.from({length : n+1}, () => new Array())
+    const visited = new Array(n+1).fill(false)
+
+    for(let i = 0; i < computers.length; i++) {
+        for(let j = 0; j < computers[i].length; j++) {
+            if(computers[i][j] === 1) {
+                if(i === j) continue;
+                graph[i+1].push(j+1)
             }
         }
     }
-    return adjacencyList;
-}
-
-function dfs(list, v, visited) {
-    visited[v] = true
-    list[v].forEach(element => {
-        if (!visited[element]) dfs(list, element, visited)
-    });
-}
-
-function solution(n, computers) {
-    var answer = 0;
-    let adjacencyList = adjacencyMatrixToAdjacencyList(computers);
-    adjacencyList = [[]].concat(adjacencyList)
-    visited = new Array(adjacencyList.length).fill(false)
-    console.log(adjacencyList, visited)
-    for (let i = 1; i < adjacencyList.length; i++) {
-        if (visited[i] === true) continue
-        else {
-            dfs(adjacencyList, i, visited)
-            answer++
+    
+    let count = 0;
+    for(let i = 1; i <= n; i++) {
+        if(!visited[i]) {
+            count++;
+            bfs(i)
         }
     }
-    return answer;
+    
+    function bfs(v) {
+        const queue = []
+        queue.push(v)
+        while(queue.length > 0) {
+            const cv = queue.shift();
+            for(let i = 0; i < graph[cv].length; i++) {
+                const next = graph[cv][i]
+                if(!visited[next]) {
+                    queue.push(next)
+                    visited[next] = true
+                }
+            }
+        }
+    }
+    return count;
 }
