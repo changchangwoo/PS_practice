@@ -1,45 +1,49 @@
+/*
+사각형의 길이를 늘린다는 개념이 아님, 해상도를 늘린다는 개념으로 접근
+그렇기에 초기값도 두배로 늘리는것이 맞음. 그리고 거기에서 모서리를 추출하는 느낌으로 접근
+현재와 같은 형태는 커브를 했을떄의 이동 값을 계산하지 못함, 픽셀 단위이기 떄문
+*/
 
 function solution(rectangle, characterX, characterY, itemX, itemY) {
-    const SIZE = 51
-    const graph = Array.from({length : SIZE * 2}, () => new Array(SIZE * 2).fill(0))
+    const size = 51 * 2
     const dx = [-1, 1, 0, 0]
     const dy = [0, 0, -1, 1]
-    const visited = Array.from({length : SIZE * 2}, () => new Array(SIZE * 2).fill(false))
-
-    let rectangleArr = rectangle.map((item) => item.map((v) => v *2))
-    for(const [x1, y1, x2, y2] of rectangleArr) {
-        for(let i = x1; i <= x2; i++) {
-            for(let j = y1; j <= y2; j++) {
+    const graph = Array.from({length : size}, () => new Array(size).fill(0))
+    const visited = Array.from({length : size}, () => new Array(size).fill(false))
+    for(const [x1, y1, x2, y2] of rectangle) {
+        for(let i = y1 * 2; i <= y2 * 2; i++) {
+            for(let j = x1 * 2; j <= x2 * 2; j++) {
                 graph[i][j] = 1
             }
         }
     }
-    for(const [x1, y1, x2, y2] of rectangleArr) {
-        for(let i = x1+1; i <= x2-1; i++) {
-            for(let j = y1+1; j <= y2-1; j++) {
+    
+    for(const [x1, y1, x2, y2] of rectangle) {
+        for(let i = y1 * 2 + 1; i <= y2 * 2 - 1 ; i++) {
+            for(let j = x1 * 2 + 1; j <= x2 * 2 - 1; j++) {
                 graph[i][j] = 0
             }
         }
     }
-    const bfs = (startX, startY) => {
-        const queue = [];
-        queue.push([startX, startY])
-        visited[startX][startY] = true;
+    
+    function bfs(x, y) {
+        const queue = []
+        queue.push([x, y])
+        visited[x][y] = true
         while(queue.length > 0) {
-            let [cx, cy] = queue.shift();
+            const [cx, cy] = queue.shift();
             for(let i = 0; i < 4; i++) {
-                let nx = cx + dx[i]
-                let ny = cy + dy[i]
-                if(nx < 0 || nx >= SIZE * 2 || ny < 0 || ny >= SIZE * 2) continue;
-                if(visited[nx][ny]) continue;
+                const nx = cx + dx[i]
+                const ny = cy + dy[i]
+                if(nx < 0 || nx >= size || ny < 0 || ny >= size) continue;
                 if(graph[nx][ny] === 0) continue;
-                queue.push([nx, ny])
+                if(visited[nx][ny]) continue;
                 visited[nx][ny] = true;
                 graph[nx][ny] = graph[cx][cy] + 1
+                queue.push([nx, ny])
             }
         }
     }
-    bfs(characterX * 2, characterY * 2)
-    
-    return Math.floor(graph[itemX * 2][itemY * 2] / 2);
+    bfs(characterY * 2, characterX * 2)
+    return Math.floor(graph[itemY * 2][itemX * 2] / 2)
 }
